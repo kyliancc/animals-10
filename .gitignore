@@ -1,3 +1,5 @@
 .idea
 data/animals10
-data/index.json
+data/index-train.json
+data/index-val.json
+data/index-test.json

@@ -2,7 +2,7 @@ import os
 import random
 import json
 
-print('Start generating index.json...')
+print('Start generating index JSON files...')
 
 classes = ['cane', 'cavallo', 'elefante', 'farfalla', 'gallina', 'gatto', 'mucca', 'pecora', 'ragno', 'scoiattolo']
 
@@ -32,16 +32,23 @@ print(f'Training samples amount: {nsamples_train}')
 print(f'Validation samples amount: {nsamples_val}')
 print(f'Testing samples amount: {nsamples_test}')
 
-json_data = {
-    'train': sample_data[:nsamples_train],
-    'val': sample_data[nsamples_train:(nsamples_train + nsamples_val)],
-    'test': sample_data[(nsamples_train + nsamples_val):]
-}
+train_data = sample_data[:nsamples_train]
+val_data = sample_data[nsamples_train:(nsamples_train + nsamples_val)]
+test_data = sample_data[(nsamples_train + nsamples_val):]
 
 # 保存为json
-json_str = json.dumps(json_data, sort_keys=True, indent=4, separators=(', ', ': '))
-with open('index.json', 'w') as f:
-    f.write(json_str)
-    print('JSON file saved!')
+train_json = json.dumps(train_data, sort_keys=True, indent=4, separators=(', ', ': '))
+val_json = json.dumps(val_data, sort_keys=True, indent=4, separators=(', ', ': '))
+test_json = json.dumps(test_data, sort_keys=True, indent=4, separators=(', ', ': '))
 
-print('Successfully generated index.json!')
+with open('index-train.json', 'w') as f:
+    f.write(train_json)
+    print('index-train.json saved!')
+with open('index-val.json', 'w') as f:
+    f.write(val_json)
+    print('index-val.json saved!')
+with open('index-test.json', 'w') as f:
+    f.write(test_json)
+    print('index-test.json saved!')
+
+print('Successfully generated index JSON files!')

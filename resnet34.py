@@ -39,7 +39,7 @@ class ResNet34(nn.Module):
                 layer.append(Res34Block(out_channels, out_channels))
         return layer
 
-    def __init__(self, num_classes):
+    def __init__(self, num_classes: int):
         super().__init__()
         self.pre = nn.Sequential(
             nn.Conv2d(3, 64, 7, 2, 3, bias=False),

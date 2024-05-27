@@ -6,6 +6,8 @@ An AI experiment of Animals-10 dataset from kaggle.
 
 We use ResNet-34 model for classification.
 
+Paper link: https://arxiv.org/pdf/1512.03385 (Deep Residual Learning for Image Recognition)
+
 # Setup
 
 ### Download and Setup Dataset
