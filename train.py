@@ -11,9 +11,9 @@ from dataset import Animals10Dataset
 
 def main():
     parser = argparse.ArgumentParser(description='Train ResNet for classification')
-    parser.add_argument('--epochs', '-e', type=int, default=5,
+    parser.add_argument('--epochs', '-e', type=int, default=10,
                         help='How many epochs to train')
-    parser.add_argument('--batch-size', '-b', dest='batch_size', type=int, default=16,
+    parser.add_argument('--batch-size', '-b', dest='batch_size', type=int, default=64,
                         help='Batch size')
     parser.add_argument('--num-workers', '-w', dest='num_workers', type=int, default=8,
                         help='Number of workers for DataLoader')
@@ -23,12 +23,13 @@ def main():
                         help='Load a model to continue training')
     parser.add_argument('--n-to-val', '-v', dest='n_to_val', type=int, default=50,
                         help='How many iterations per validation')
-    parser.add_argument('--n-to-save', '-s', dest='n_to_save', type=int, default=100,
+    parser.add_argument('--n-to-save', '-s', dest='n_to_save', type=int, default=400,
                         help='How many iterations per saving')
     args = parser.parse_args()
     print(args)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f'Using device: {device}.')
 
     train_dataset = Animals10Dataset(set_type='train')
     val_dataset = Animals10Dataset(set_type='val')
@@ -37,11 +38,22 @@ def main():
 
     model = ResNet34(10)
     criterion = nn.CrossEntropyLoss()
+    model.to(device)
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
-
     iterations = 0
+
+    if args.load:
+        state_dict = torch.load(args.load)
+        iterations = state_dict['iterations']
+        model.load_state_dict(state_dict['model'])
+        optimizer.load_state_dict(state_dict['optimizer'])
+        print(f'Loaded model from {args.load}!')
+
     for epoch in range(args.epochs):
         for img, label in train_loader:
+            img = img.to(device)
+            label = label.to(device)
+
             optimizer.zero_grad()
 
             pred = model(img)
@@ -50,7 +62,7 @@ def main():
 
             optimizer.step()
 
-            print(f'Iteration {iterations} finished with loss: {loss.item():.4f}')
+            print(f'Iteration {iterations} finished with loss: {loss.item():.4f}.')
             iterations += 1
 
             if iterations % args.n_to_val == 0:
@@ -58,14 +70,23 @@ def main():
                     total = 0
                     total_correct = 0
                     for img_val, label_val in val_loader:
+                        img_val = img_val.to(device)
+                        label_val = label_val.to(device)
                         pred = torch.argmax(model(img_val), dim=1)
                         total_correct += torch.sum(torch.eq(pred, label_val))
                         total += pred.size(0)
                     accuracy = total_correct / total
-                    print(f'Validation finished with accuracy: {accuracy:.2%}')
+                    print(f'Validation finished with accuracy: {accuracy:.2%}.')
 
-            # if iterations % args.n_to_save == 0:
-            #     pass
+            if iterations % args.n_to_save == 0:
+                save_path = f'./checkpoints/animals-10-resnet34-{iterations}.pth'
+                state_dict = {
+                    'iterations': iterations,
+                    'model': model.state_dict(),
+                    'optimizer': optimizer.state_dict()
+                }
+                torch.save(state_dict, save_path)
+                print(f'Model saved at {save_path}!')
 
 
 if __name__ == '__main__':

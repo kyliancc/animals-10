@@ -17,7 +17,7 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f'Using device: {device}.')
 
-    dataset = Animals10Dataset(set_type='test')
+    dataset = Animals10Dataset(set_type='val')
     dataloader = DataLoader(dataset=dataset, batch_size=args.batch_size, shuffle=False, num_workers=8)
 
     model = ResNet34(10).to(device)
@@ -38,7 +38,7 @@ def main():
         correct += torch.sum(torch.eq(pred, label)).item()
 
     accuracy = correct / total
-    print(f'Test finished! Accuracy: {accuracy:.2%}')
+    print(f'Validation finished! Accuracy: {accuracy:.2%}')
 
 
 if __name__ == '__main__':

@@ -33,8 +33,12 @@ class Animals10Dataset(Dataset):
         file_path = sample_data['file']
         label = self._class2label(sample_data['class'])
         img = read_image(os.path.join(self.dataset_root, file_path))
+
+        if img.size(0) == 1:
+            img = img.expand(3, -1, -1)
         if img.size(0) == 4:
             img = img[:-1,:,:]
+
         img = self.resize(img)
         # 归一化 mean = 127.5, std = 127.5
         img = (img - 127.5) / 127.5

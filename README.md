@@ -14,5 +14,5 @@ Paper link: https://arxiv.org/pdf/1512.03385 (Deep Residual Learning for Image R
 
 make sure you have installed kaggle previously.
 
-run `data/download.sh`, then the dataset directory and `index.json` will appear in the `data` directory.
+run `data/download.sh`, then the dataset directory and index JSON files will appear in the `data` directory.
 They're required for training.
