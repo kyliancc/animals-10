@@ -8,7 +8,10 @@ class Res34Block(nn.Module):
         super().__init__()
         # in_channels 和 out_channels 不匹配时需要 scale
         if in_channels != out_channels:
-            self.linear = nn.Linear(in_channels, out_channels, bias=False)
+            self.linear = nn.Sequential(
+                nn.Conv2d(in_channels, out_channels, 1, stride, bias=False),
+                nn.BatchNorm2d(out_channels)
+            )
             self.scale = True
         else:
             self.scale = False
@@ -23,9 +26,10 @@ class Res34Block(nn.Module):
         )
 
     def forward(self, x):
+        result = self.convs(x)
         if self.scale:
             x = self.linear(x)
-        return F.relu(x + self.convs(x))
+        return F.relu(x + result)
 
 
 class ResNet34(nn.Module):
@@ -53,11 +57,13 @@ class ResNet34(nn.Module):
             self._make_layer(128, 256, 6),
             self._make_layer(256, 512, 3)
         )
+        self.avgpool = nn.AvgPool2d(7, 1)
         self.fc = nn.Linear(512, num_classes)
 
     def forward(self, x):
         x = self.pre(x)
-        x = self.conv(x)
+        x = self.res_convs(x)
+        x = self.avgpool(x)
         x = x.view(x.size(0), -1)
         x = self.fc(x)
         return x
