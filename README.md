@@ -42,3 +42,7 @@ python train.py -f [your_checkpoint]
 ~~~
 python val.py -f [your_checkpoint]
 ~~~
+
+# Result
+
+I got accuracy 72.13%, where batch size is 64 and trained 6400 iterations.
