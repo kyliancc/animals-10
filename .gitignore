@@ -1,6 +1,6 @@
 .idea
 __pycache__
-checkpoints
+checkpoints/*.pth
 data/animals10
 data/index-train.json
 data/index-val.json
